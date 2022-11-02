@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import odoo.tests.common as common
+from odoo.exceptions import ValidationError
 
 
 class TestProjectTaskCode(common.TransactionCase):
@@ -10,7 +11,7 @@ class TestProjectTaskCode(common.TransactionCase):
         self.project_task_model = self.env["project.task"]
         self.ir_sequence_model = self.env["ir.sequence"]
         self.task_sequence = self.env.ref("project_task_code.sequence_task")
-        self.project_task = self.env.ref("project.project_task_1")
+        self.project_task = self.env.ref("project.project_1_task_1")
 
     def test_old_task_code_assign(self):
         project_tasks = self.project_task_model.search([])
@@ -38,3 +39,15 @@ class TestProjectTaskCode(common.TransactionCase):
         )
         result = project_task.name_get()
         self.assertEqual(result[0][1], "[%s] Task Testing Get Name" % code)
+
+    def test_unique_task_code(self):
+        # Enable unique task code constraint
+        self.env["ir.config_parameter"].sudo().set_param(
+            "project_task_code.project_task_unique_code", True
+        )
+
+        project_task = self.project_task_model.create({"name": "Testing task code"})
+        with self.assertRaises(ValidationError):
+            self.project_task_model.create(
+                {"name": "Testing task code", "code": project_task.code}
+            )

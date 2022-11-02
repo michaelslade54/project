@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ProjectTask(models.Model):
@@ -15,23 +16,29 @@ class ProjectTask(models.Model):
         copy=False,
     )
 
-    _sql_constraints = [
-        ("project_task_unique_code", "UNIQUE (code)", _("The code must be unique!")),
-    ]
+    @api.constrains("code")
+    def _check_project_task_unique_code(self):
+        project_task_unique_code = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("project_task_code.project_task_unique_code")
+        )
+
+        if not project_task_unique_code:
+            return
+
+        for task in self:
+            if self.search([("code", "=", task.code), ("id", "!=", task.id)], limit=1):
+                raise ValidationError(_("The code must be unique!"))
 
     @api.model_create_multi
     def create(self, vals_list):
-        new_list = []
         for vals in vals_list:
             if vals.get("code", "/") == "/":
-                new_vals = dict(
-                    vals,
-                    code=self.env["ir.sequence"].next_by_code("project.task") or "/",
+                vals["code"] = (
+                    self.env["ir.sequence"].next_by_code("project.task") or "/"
                 )
-            else:
-                new_vals = vals
-            new_list.append(new_vals)
-        return super().create(new_list)
+        return super().create(vals_list)
 
     def name_get(self):
         result = super().name_get()
