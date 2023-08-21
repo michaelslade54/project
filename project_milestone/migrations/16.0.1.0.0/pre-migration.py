@@ -1,4 +1,4 @@
-from openupradelib import openupgrade
+from openupgradelib import openupgrade
 
 xml_ids = ["view_task_enhancement_milestone_tree",
            "view_task_enhancement_milestone_form",
