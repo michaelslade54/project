@@ -14,7 +14,7 @@ def migrate(env, version):
     env.cr.execute(
         """
         UPDATE project_project SET allow_task_dependencies=true
-        WHERE id is (SELECT project_id FROM project_task WHERE id in (SELECT task_id
+        WHERE id in (SELECT project_id FROM project_task WHERE id in (SELECT task_id
         FROM project_task_dependency_task_rel));
         """
     )
