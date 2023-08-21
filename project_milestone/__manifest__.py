@@ -11,6 +11,6 @@
     "application": False,
     "development_status": "Beta",
     "maintainers": ["patrickrwilson"],
-    "installabe": True,
+    "installable": True,
     "auto_install": False,
 }

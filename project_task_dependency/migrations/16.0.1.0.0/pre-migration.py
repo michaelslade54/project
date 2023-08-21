@@ -1,6 +1,6 @@
 from openupgradelib import openupgrade
 
-xml_ids = ["project_task_form"]
+xml_ids = ["project_task_dependency.project_task_form"]
 
 @openupgrade.migrate()
 def migrate(env, version):
