@@ -1,13 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="project_task_code_form_view" model="ir.ui.view">
         <field name="name">project.task.code.form</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2" />
         <field name="arch" type="xml">
-            <field name="name" position="before">
-                <field name="code" class="oe_inline" />
-                <span class="oe_inline"> - </span>
+            <field name="name" position="replace">
+                <span>
+                    <field name="code" class="" />
+                    <field name="name" class="o_task_name text-truncate w-100 w-md-75 pe-2"
+                        placeholder="Task Title..." />
+                </span>
             </field>
         </field>
     </record>
@@ -26,9 +29,22 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_kanban" />
         <field name="arch" type="xml">
-            <field name="name" position="before">
-                <field name="code" />
-            </field>
+            <xpath expr="///strong[@class='o_kanban_record_title']" position="replace">
+                <strong class="o_kanban_record_title">
+                    <s t-if="!record.active.raw_value">
+                        <span>
+                            <field name="code" /> - <field name="name"
+                                widget="name_with_subtask_count" />
+                        </span>
+                    </s>
+                    <t t-else="">
+                        <span>
+                            <field name="code" /> - <field name="name"
+                                widget="name_with_subtask_count" />
+                        </span>
+                    </t>
+                </strong>
+            </xpath>
         </field>
     </record>
     <record id="project_task_code_search_view" model="ir.ui.view">
