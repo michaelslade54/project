@@ -15,7 +15,9 @@ class ProjectTask(models.Model):
     code = fields.Char(
         string="Task Number",
         required=True,
-        default="/",
+        default=lambda self: self.env['ir.sequence'].next_by_code(
+            'project.task'
+        ),
         readonly=True,
         copy=False,
     )
