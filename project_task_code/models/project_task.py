@@ -15,7 +15,7 @@ class ProjectTask(models.Model):
     code = fields.Char(
         string="Task Number",
         required=True,
-        default=lambda self: self.env['ir.sequence'].next_by_code(
+        default=lambda self: self.env['ir.sequence'].sudo().next_by_code(
             'project.task'
         ),
         readonly=True,
@@ -33,16 +33,6 @@ class ProjectTask(models.Model):
     @property
     def SELF_WRITABLE_FIELDS(self):
         return super().SELF_WRITABLE_FIELDS | PROJECT_TASK_WRITABLE_FIELDS
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get("code", "/") == "/":
-                vals["code"] = (
-                    # `sudo()` for portal users
-                    self.env["ir.sequence"].sudo().next_by_code("project.task") or "/"
-                )
-        return super().create(vals_list)
 
     @api.depends("name", "code")
     def _compute_display_name(self):
