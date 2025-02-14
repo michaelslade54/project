@@ -1,7 +1,12 @@
 from openupgradelib import openupgrade
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 @openupgrade.migrate()
 def migrate(env, version):
+    _logger.WARNING("Migration is being performed")
     task_obj = env["project.task"]
     sequence_obj = env["ir.sequence"]
     tasks = task_obj.search([('code','=',False)], order="id")
