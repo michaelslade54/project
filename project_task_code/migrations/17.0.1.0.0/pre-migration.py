@@ -1,11 +1,12 @@
-from odoo.upgrade import util
+from openupgradelib import openupgrade
 
-def migrate(cr, version):
-    task_obj = util.env(cr)["project.task"]
-    sequence_obj = util.env(cr)["ir.sequence"]
-    tasks = task_obj.sudo().search([('code','=',False)], order="id")
+@openupgrade.migrate()
+def migrate(env, version):
+    task_obj = env["project.task"]
+    sequence_obj = env["ir.sequence"]
+    tasks = task_obj.search([('code','=',False)], order="id")
     for task_id in tasks.ids:
-        cr.execute(
+        env.cr.execute(
             "UPDATE project_task SET code = %s WHERE id = %s;",
             (
                 sequence_obj.next_by_code("project.task"),
